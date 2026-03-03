@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>العيادة العلمية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0a1628;--navy2:#0f2040;--blue:#1a4fa0;--blue-l:#2e6fd4;
+  --cyan:#0ea5d4;--gold:#c9a030;--gold-l:#e8c860;
+  --bg:#f0f4fa;--white:#fff;--text:#1a1a1a;--muted:#6b7280;
+  --border:#dde2ee;--red:#dc2626;--green:#16a34a;--purple:#7c3aed;
+}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 60%,#0d2a5a 100%);display:flex;align-items:center;justify-content:center;z-index:999;}
+.login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:42px 36px;text-align:center;max-width:380px;width:90%;backdrop-filter:blur(10px);}
+.login-logo{width:70px;height:70px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 18px;box-shadow:0 8px 24px rgba(14,165,212,0.35);}
+.login-card h1{font-size:24px;font-weight:900;color:white;margin-bottom:6px;}
+.login-card p{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:28px;line-height:1.6;}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;background:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,0.25);}
+.btn-google:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.3);}
+.btn-google img{width:20px;height:20px;}
+.login-note{font-size:11px;color:rgba(255,255,255,0.28);margin-top:16px;line-height:1.6;}
+.sync-status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:50px;margin-bottom:10px;}
+.sync-ok{background:rgba(22,163,74,0.15);color:#4ade80;border:1px solid rgba(22,163,74,0.3);}
+.sync-err{background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3);}
+.sync-ing{background:rgba(14,165,212,0.15);color:#38bdf8;border:1px solid rgba(14,165,212,0.3);}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;right:0;width:230px;height:100vh;background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%);color:white;display:flex;flex-direction:column;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.3);}
+.sidebar-logo{padding:18px 16px 13px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.logo-badge{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text h1{font-size:13px;font-weight:900;line-height:1.2;}
+.logo-text p{font-size:10px;opacity:0.4;}
+.user-bar{padding:10px 14px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:8px;}
+.user-pic{width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);}
+.user-name{font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-logout{background:none;border:none;color:rgba(255,255,255,0.35);font-size:14px;cursor:pointer;padding:2px 4px;}
+.btn-logout:hover{color:#f87171;}
+.nav-section{padding:10px 12px 3px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);letter-spacing:1px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:10px;margin:2px 8px;cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,0.55);transition:all .2s;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:white;}
+.nav-item.active{background:linear-gradient(135deg,var(--blue),var(--blue-l));color:white;box-shadow:0 4px 14px rgba(26,79,160,0.4);}
+.nav-item .ni{font-size:15px;width:20px;text-align:center;}
+.nav-item .badge{margin-right:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:800;padding:2px 7px;border-radius:50px;}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,0.07);}
+.drive-badge{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.05);border-radius:10px;padding:9px 11px;cursor:pointer;transition:all .2s;}
+.drive-badge:hover{background:rgba(255,255,255,0.09);}
+.drive-badge-icon{font-size:18px;}
+.drive-info{flex:1;}
+.drive-info .di-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);}
+.drive-info .di-sub{font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px;}
+.drive-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.drive-dot.ok{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,0.5);}
+.drive-dot.err{background:#f87171;}
+.drive-dot.ing{background:#38bdf8;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.clock-info{font-size:10px;color:rgba(255,255,255,0.25);text-align:center;margin-top:8px;}
+
+/* ── MAIN ── */
+.main{margin-right:230px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:18px;font-weight:900;color:var(--navy);}
+.topbar-right{display:flex;align-items:center;gap:9px;}
+.date-badge{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--muted);}
+.btn-add{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--blue),var(--blue-l));color:white;border:none;border-radius:10px;padding:8px 15px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(26,79,160,0.3);}
+.btn-add:hover{transform:translateY(-1px);}
+
+/* ── PAGES ── */
+.page{display:none;padding:20px 24px;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat-card{background:var(--white);border-radius:14px;padding:15px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);display:flex;align-items:center;gap:11px;}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.stat-icon.blue{background:linear-gradient(135deg,#dbeafe,#bfdbfe);}
+.stat-icon.green{background:linear-gradient(135deg,#dcfce7,#bbf7d0);}
+.stat-icon.gold{background:linear-gradient(135deg,#fef9c3,#fef08a);}
+.stat-icon.purple{background:linear-gradient(135deg,#ede9fe,#ddd6fe);}
+.stat-num{font-size:24px;font-weight:900;color:var(--navy);line-height:1;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;}
+
+/* ── SEARCH ── */
+.search-bar{display:flex;gap:10px;margin-bottom:14px;}
+.search-input-wrap{position:relative;flex:1;}
+.search-input-wrap input{width:100%;padding:10px 14px 10px 36px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Tajawal',sans-serif;background:var(--white);outline:none;color:var(--text);transition:border-color .2s;}
+.search-input-wrap input:focus{border-color:var(--blue-l);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);}
+
+/* ── TABLE ── */
+.table-card{background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);overflow:hidden;}
+.table-header{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-size:14px;font-weight:800;color:var(--navy);}
+.patients-table{width:100%;border-collapse:collapse;}
+.patients-table th{padding:9px 13px;background:#f8fafd;font-size:11px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);text-align:right;}
+.patients-table td{padding:12px 13px;border-bottom:1px solid #f3f4f6;font-size:13px;vertical-align:middle;}
+.patients-table tr:last-child td{border-bottom:none;}
+.patients-table tr:hover td{background:#f8fafd;cursor:pointer;}
+.patient-name-cell{display:flex;align-items:center;gap:9px;}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.p-name{font-weight:700;font-size:13px;color:var(--navy);}
+.p-id{font-size:11px;color:var(--muted);}
+.visit-count{background:#e0e7ff;color:#3730a3;font-size:11px;font-weight:800;padding:3px 9px;border-radius:50px;}
+.last-visit{font-size:12px;color:var(--muted);}
+.btn-row-actions{display:flex;gap:5px;}
+.btn-sm{padding:5px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:12px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;background:var(--white);transition:all .2s;}
+.btn-sm:hover{border-color:var(--blue-l);color:var(--blue);}
+.btn-sm.primary{background:var(--blue);color:white;border-color:var(--blue);}
+.btn-sm.danger{color:var(--red);}
+.btn-sm.danger:hover{border-color:var(--red);background:#fef2f2;}
+.empty-state{text-align:center;padding:45px 20px;color:var(--muted);}
+.empty-icon{font-size:44px;margin-bottom:9px;opacity:.3;}
+.empty-state p{font-size:14px;font-weight:600;}
+.empty-state span{font-size:12px;display:block;margin-top:3px;opacity:.7;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,22,40,0.65);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:14px;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);transform:translateY(20px);transition:transform .3s;}
+.modal-overlay.open .modal{transform:none;}
+.modal-head{padding:18px 20px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1;border-radius:20px 20px 0 0;}
+.modal-title{font-size:15px;font-weight:800;color:var(--navy);}
+.modal-close{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--bg);}
+.modal-body{padding:16px 20px 20px;}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.fg label .req{color:var(--red);}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Tajawal',sans-serif;color:var(--text);background:#fafbfc;outline:none;transition:border-color .2s;direction:rtl;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue-l);box-shadow:0 0 0 3px rgba(46,111,212,0.1);background:white;}
+.fg textarea{resize:vertical;min-height:70px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.err-msg{font-size:11px;color:var(--red);margin-top:3px;display:none;}
+.err-msg.show{display:block;}
+.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.g-btn{padding:9px;border:1.5px solid var(--border);border-radius:9px;background:#fafbfc;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;text-align:center;transition:all .2s;color:var(--muted);}
+.g-btn.sel{border-color:var(--blue);background:#eff6ff;color:var(--navy);}
+.cb-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.cb-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;background:#fafbfc;}
+.cb-item:hover{border-color:var(--blue-l);}
+.cb-item.sel{border-color:var(--blue);background:#eff6ff;color:var(--navy);}
+.cb-box{width:16px;height:16px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.cb-item.sel .cb-box{background:var(--blue);border-color:var(--blue);color:white;}
+.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:16px;padding-top:13px;border-top:1px solid var(--border);}
+.btn-cancel{padding:9px 18px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;color:var(--muted);}
+.btn-save{padding:9px 22px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue-l));color:white;font-size:14px;font-weight:800;font-family:'Tajawal',sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(26,79,160,0.3);}
+
+/* ── PROFILE ── */
+.profile-header{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:white;border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.profile-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:white;border:3px solid rgba(255,255,255,0.3);flex-shrink:0;}
+.profile-info h2{font-size:20px;font-weight:900;margin-bottom:4px;}
+.profile-info p{font-size:12px;opacity:0.7;}
+.profile-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ptag{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:2px 10px;font-size:11px;font-weight:600;}
+.profile-grid{display:grid;grid-template-columns:255px 1fr;gap:13px;}
+.info-card{background:var(--white);border-radius:14px;padding:16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.info-card-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
+.info-row{padding:6px 0;border-bottom:1px solid #f3f4f6;display:flex;gap:8px;align-items:flex-start;}
+.info-row:last-child{border-bottom:none;}
+.ir-label{font-size:11px;color:var(--muted);font-weight:600;min-width:80px;flex-shrink:0;}
+.ir-value{font-size:12px;font-weight:700;color:var(--navy);flex:1;}
+.visit-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 5px rgba(0,0,0,0.04);position:relative;overflow:hidden;}
+.visit-card::before{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;}
+.visit-card.khitan::before{background:#2563eb;}
+.visit-card.hijama::before{background:#dc2626;}
+.visit-card.nursing::before{background:var(--green);}
+.visit-card.other::before{background:var(--purple);}
+.visit-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.visit-service{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px;}
+.visit-service.khitan{background:#dbeafe;color:#1d4ed8;}
+.visit-service.hijama{background:#fee2e2;color:#b91c1c;}
+.visit-service.nursing{background:#dcfce7;color:#15803d;}
+.visit-service.other{background:#ede9fe;color:#6d28d9;}
+.visit-date{font-size:11px;color:var(--muted);font-weight:600;}
+.visit-details{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:4px;}
+.visit-notes{font-size:12px;color:var(--muted);background:#f8f9fa;border-radius:7px;padding:6px 9px;margin-top:4px;}
+.btn-back-profile{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border:1.5px solid var(--border);border-radius:9px;background:var(--white);font-size:12px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;color:var(--muted);transition:all .2s;margin-bottom:13px;}
+.btn-back-profile:hover{border-color:var(--blue-l);color:var(--blue);}
+.today-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px;}
+.today-card{background:var(--white);border-radius:13px;padding:14px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:box-shadow .2s;}
+.today-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.tc-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:white;flex-shrink:0;}
+.tc-name{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:3px;}
+.confirm-msg{font-size:14px;line-height:1.6;color:var(--text);margin-bottom:4px;}
+.confirm-sub{font-size:12px;color:var(--muted);}
+.btn-danger-confirm{padding:9px 22px;border:none;border-radius:10px;background:var(--red);color:white;font-size:13px;font-weight:800;font-family:'Tajawal',sans-serif;cursor:pointer;}
+.svc-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:50px;}
+.svc-khitan{background:#dbeafe;color:#1d4ed8;}
+.svc-hijama{background:#fee2e2;color:#b91c1c;}
+.svc-nursing{background:#dcfce7;color:#15803d;}
+.svc-other{background:#ede9fe;color:#6d28d9;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:white;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;box-shadow:0 8px 24px rgba(0,0,0,0.25);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+#nursingSub2{display:none;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">🏥</div>
+    <h1>العيادة العلمية</h1>
+    <p>نظام إدارة المرضى<br>سجّل دخولك لحفظ بياناتك على Google Drive</p>
+    <button class="btn-google" onclick="signIn()">
+      <img src="https://www.google.com/favicon.ico" alt="G">
+      تسجيل الدخول بـ Google
+    </button>
+    <p class="login-note">بياناتك تُحفظ في Drive الخاص بك فقط<br>لا أحد غيرك يستطيع الوصول إليها</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell" style="display:none;">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">
+      <div class="logo-icon">🏥</div>
+      <div class="logo-text"><h1>العيادة العلمية</h1><p>نظام إدارة المرضى</p></div>
+    </div>
+  </div>
+  <div class="user-bar">
+    <img class="user-pic" id="userPic" src="" alt="">
+    <span class="user-name" id="userName"></span>
+    <button class="btn-logout" onclick="signOut()" title="تسجيل الخروج">⏻</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:6px 0;">
+    <div class="nav-section">القوائم</div>
+    <div class="nav-item active" id="nav-dash"     onclick="showPage('dash')">    <span class="ni">🏠</span> لوحة التحكم</div>
+    <div class="nav-item"        id="nav-patients" onclick="showPage('patients')"><span class="ni">👥</span> المرضى <span class="badge" id="patientsBadge">0</span></div>
+    <div class="nav-item"        id="nav-today"    onclick="showPage('today')">   <span class="ni">📅</span> زيارات اليوم</div>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="drive-badge" onclick="syncNow()" title="اضغط للمزامنة اليدوية">
+      <div class="drive-badge-icon">☁️</div>
+      <div class="drive-info">
+        <div class="di-title">Google Drive</div>
+        <div class="di-sub" id="lastSyncText">جاري التحميل...</div>
+      </div>
+      <div class="drive-dot" id="driveDot"></div>
+    </div>
+    <div class="clock-info" id="clockDisplay"></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">لوحة التحكم</div>
+    <div class="topbar-right">
+      <div class="date-badge" id="dateDisplay"></div>
+      <button class="btn-add" id="btnAddVisit"    onclick="openAddVisitForPatient(currentProfileId)" style="display:none;">➕ زيارة</button>
+      <button class="btn-add" id="btnAddPatient"  onclick="openNewPatientModal()" style="display:none;">➕ مريض جديد</button>
+    </div>
+  </div>
+
+  <!-- DASH -->
+  <div class="page active" id="pageDash">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">إجمالي المرضى</div></div></div>
+      <div class="stat-card"><div class="stat-icon green">📅</div><div><div class="stat-num" id="statToday">0</div><div class="stat-lbl">زيارات اليوم</div></div></div>
+      <div class="stat-card"><div class="stat-icon gold">🩸</div><div><div class="stat-num" id="statHijama">0</div><div class="stat-lbl">حجامة</div></div></div>
+      <div class="stat-card"><div class="stat-icon purple">✂️</div><div><div class="stat-num" id="statKhitan">0</div><div class="stat-lbl">ختان</div></div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><div class="table-title">🕐 آخر الزيارات</div></div>
+      <div id="recentVisitsList"></div>
+    </div>
+  </div>
+
+  <!-- PATIENTS -->
+  <div class="page" id="pagePatients">
+    <div class="search-bar">
+      <div class="search-input-wrap"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="ابحث بالاسم أو الهاتف..." oninput="renderPatients()"></div>
+      <button class="btn-add" onclick="openNewPatientModal()">➕ مريض جديد</button>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><div class="table-title">قائمة المرضى</div><div style="font-size:12px;color:var(--muted);font-weight:600;" id="patientCount"></div></div>
+      <table class="patients-table">
+        <thead><tr><th>المريض</th><th>العمر / الجنس</th><th>الهاتف</th><th>الزيارات</th><th>آخر زيارة</th><th>الإجراءات</th></tr></thead>
+        <tbody id="patientsTableBody"></tbody>
+      </table>
+      <div id="patientsEmpty" class="empty-state" style="display:none;"><div class="empty-icon">👥</div><p>لا يوجد مرضى مسجلون</p><span>اضغط "مريض جديد" للبدء</span></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page" id="pageProfile">
+    <button class="btn-back-profile" onclick="showPage('patients')">→ رجوع</button>
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- TODAY -->
+  <div class="page" id="pageToday">
+    <div class="today-grid" id="todayGrid"></div>
+    <div id="todayEmpty" class="empty-state" style="display:none;"><div class="empty-icon">📅</div><p>لا توجد زيارات اليوم</p></div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: PATIENT -->
+<div class="modal-overlay" id="modalAddPatient">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="patientModalTitle">➕ مريض جديد</div><button class="modal-close" onclick="closeModal('modalAddPatient')">✕</button></div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="fg"><label>الاسم الكامل <span class="req">*</span></label><input type="text" id="inp_name" placeholder="اسم المريض"><div class="err-msg" id="err_name">مطلوب</div></div>
+        <div class="fg"><label>العمر <span class="req">*</span></label><input type="number" id="inp_age" placeholder="18+" min="18" max="120"><div class="err-msg" id="err_age">يجب 18+ سنة</div></div>
+      </div>
+      <div class="fg">
+        <label>الجنس <span class="req">*</span></label>
+        <div class="gender-row"><button class="g-btn" id="gm" onclick="setGender('male')">👨 ذكر</button><button class="g-btn" id="gf" onclick="setGender('female')">👩 أنثى</button></div>
+        <div class="err-msg" id="err_gender">اختر الجنس</div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label>رقم الهاتف</label><input type="tel" id="inp_phone" placeholder="07XXXXXXXXX"></div>
+        <div class="fg"><label>المحافظة</label><input type="text" id="inp_address" placeholder="مثال: بغداد"></div>
+      </div>
+      <div class="fg">
+        <label>الأمراض المزمنة</label>
+        <div class="cb-grid" id="chronicCbs">
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🩸 ضغط الدم</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🍬 سكري</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>💊 قلب</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🫁 ربو</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🦴 مفاصل</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🧪 كلى</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🧠 أعصاب</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🩺 تخثر الدم</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label>أدوية حالية</label><textarea id="inp_meds" placeholder="اذكر الأدوية..."></textarea></div>
+        <div class="fg"><label>حساسية من أدوية</label><textarea id="inp_allergy" placeholder="مثال: بنسلين..."></textarea></div>
+      </div>
+      <div class="fg"><label>ملاحظات طبية</label><textarea id="inp_notes" placeholder="أي معلومات مهمة..."></textarea></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('modalAddPatient')">إلغاء</button>
+        <button class="btn-save" onclick="savePatient()">💾 حفظ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VISIT -->
+<div class="modal-overlay" id="modalAddVisit">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">📋 إضافة زيارة</div><button class="modal-close" onclick="closeModal('modalAddVisit')">✕</button></div>
+    <div class="modal-body">
+      <div id="visitPatientSelectWrap" class="fg">
+        <label>المريض <span class="req">*</span></label>
+        <select id="inp_visitPatient"><option value="">— اختر المريض —</option></select>
+        <div class="err-msg" id="err_visitPatient">اختر المريض</div>
+      </div>
+      <div class="row2">
+        <div class="fg">
+          <label>الخدمة <span class="req">*</span></label>
+          <select id="inp_visitService" onchange="toggleNursingSub()">
+            <option value="">— اختر —</option>
+            <option value="khitan">✂️ ختان</option>
+            <option value="hijama">🩸 حجامة</option>
+            <option value="nursing">💉 خدمات تمريضية</option>
+            <option value="other">🩺 أخرى</option>
+          </select>
+          <div class="err-msg" id="err_visitService">اختر الخدمة</div>
+        </div>
+        <div class="fg"><label>التاريخ <span class="req">*</span></label><input type="date" id="inp_visitDate"><div class="err-msg" id="err_visitDate">اختر التاريخ</div></div>
+      </div>
+      <div class="fg" id="nursingSub2">
+        <label>نوع الخدمة التمريضية</label>
+        <div class="cb-grid">
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>📊 قياس ضغط</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🩺 قياس سكري</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>💊 متابعة دواء</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>💉 حقنة</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🩹 ضماد</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🫀 أكسجين</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>🔬 تحاليل</div>
+          <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div>📋 متابعة دورية</div>
+        </div>
+      </div>
+      <div class="fg"><label>تفاصيل الزيارة <span class="req">*</span></label><textarea id="inp_visitDetails" placeholder="ماذا تم في هذه الزيارة..." style="min-height:85px;"></textarea><div class="err-msg" id="err_visitDetails">اكتب تفاصيل</div></div>
+      <div class="fg"><label>ملاحظات / توصيات</label><textarea id="inp_visitNotes" placeholder="نتائج، توصيات..."></textarea></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('modalAddVisit')">إلغاء</button>
+        <button class="btn-save" onclick="saveVisit()">💾 حفظ الزيارة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal" style="max-width:340px;">
+    <div class="modal-head"><div class="modal-title">⚠️ تأكيد الحذف</div><button class="modal-close" onclick="closeModal('modalConfirm')">✕</button></div>
+    <div class="modal-body">
+      <p class="confirm-msg" id="confirmMsg"></p><p class="confirm-sub">لا يمكن التراجع</p>
+      <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalConfirm')">إلغاء</button><button class="btn-danger-confirm" id="confirmBtn">حذف</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+const CLIENT_ID   = '711441837882-460tbpn1hbh20u6fk8f169uq6us868s2.apps.googleusercontent.com';
+const SCOPES      = 'https://www.googleapis.com/auth/drive.appdata';
+const FILE_NAME   = 'ilmiyya_clinic_db.json';
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let db             = { patients:[], visits:[] };
+let accessToken    = null;
+let driveFileId    = null;
+let editPatientId  = null;
+let currentGender  = '';
+let currentProfileId = null;
+let visitPatientLock = null;
+let syncTimer      = null;
+let pendingSync    = false;
+
+// ══════════════════════════════════════════════
+//  GOOGLE SIGN-IN
+// ══════════════════════════════════════════════
+function signIn(){
+  const params = new URLSearchParams({
+    client_id:     CLIENT_ID,
+    redirect_uri:  'https://claude.ai',
+    response_type: 'token',
+    scope:         SCOPES + ' https://www.googleapis.com/auth/userinfo.profile',
+    prompt:        'select_account',
+  });
+  const w = window.open('https://accounts.google.com/o/oauth2/v2/auth?' + params, 'googleLogin', 'width=500,height=620');
+  const timer = setInterval(async () => {
+    try {
+      const url = w.location.href;
+      if(url.includes('access_token')){
+        clearInterval(timer); w.close();
+        const hash = new URLSearchParams(url.split('#')[1]||url.split('?')[1]||'');
+        accessToken = hash.get('access_token');
+        if(!accessToken){ showToast('❌ فشل تسجيل الدخول'); return; }
+        try{
+          const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo',
+            {headers:{Authorization:'Bearer '+accessToken}});
+          const u = await r.json();
+          document.getElementById('userPic').src = u.picture||'';
+          document.getElementById('userName').textContent = u.name||u.email||'';
+        }catch(e){}
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appShell').style.display    = 'block';
+        setDriveStatus('ing','جاري التحميل...');
+        await loadFromDrive();
+        renderAll();
+        startAutoSync();
+      }
+    } catch(e){ /* cross-origin: still loading */ }
+    if(w.closed){ clearInterval(timer); }
+  }, 500);
+}
+
+function signOut(){
+  if(accessToken) fetch('https://oauth2.googleapis.com/revoke?token='+accessToken,{method:'POST'}).catch(()=>{});
+  accessToken = null; driveFileId = null;
+  document.getElementById('appShell').style.display   = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  clearInterval(syncTimer);
+}
+
+// ══════════════════════════════════════════════
+//  DRIVE I/O
+// ══════════════════════════════════════════════
+function driveHeaders(extra={}){
+  return { Authorization:'Bearer '+accessToken, ...extra };
+}
+
+async function findFile(){
+  const r = await fetch(
+    'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%22'+FILE_NAME+'%22&fields=files(id)',
+    { headers: driveHeaders() }
+  );
+  const j = await r.json();
+  return j.files?.length ? j.files[0].id : null;
+}
+
+async function loadFromDrive(){
+  try{
+    driveFileId = await findFile();
+    if(!driveFileId){ setDriveStatus('ok','ملف جديد'); return; }
+    const r = await fetch(
+      'https://www.googleapis.com/drive/v3/files/'+driveFileId+'?alt=media',
+      { headers: driveHeaders() }
+    );
+    db = await r.json();
+    db.patients = db.patients||[];
+    db.visits   = db.visits||[];
+    setDriveStatus('ok', 'تم التحميل');
+    updateLastSync();
+  }catch(e){
+    setDriveStatus('err','خطأ في التحميل');
+  }
+}
+
+async function saveToDrive(){
+  if(!accessToken) return;
+  setDriveStatus('ing','جاري الحفظ...');
+  const body = JSON.stringify(db);
+  try{
+    if(driveFileId){
+      await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files/'+driveFileId+'?uploadType=media',
+        { method:'PATCH', headers: driveHeaders({'Content-Type':'application/json'}), body }
+      );
+    } else {
+      const meta = { name: FILE_NAME, parents: ['appDataFolder'] };
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(meta)],{type:'application/json'}));
+      form.append('file',     new Blob([body],               {type:'application/json'}));
+      const r = await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+        { method:'POST', headers: driveHeaders(), body: form }
+      );
+      const j = await r.json();
+      driveFileId = j.id;
+    }
+    setDriveStatus('ok','تم الحفظ');
+    updateLastSync();
+    pendingSync = false;
+  }catch(e){
+    setDriveStatus('err','فشل الحفظ');
+  }
+}
+
+function queueSync(){
+  pendingSync = true;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveToDrive, 1500);
+}
+
+function startAutoSync(){
+  setInterval(()=>{ if(pendingSync) saveToDrive(); }, 30000);
+}
+
+async function syncNow(){
+  await saveToDrive();
+  showToast('☁️ تمت المزامنة');
+}
+
+function setDriveStatus(state, text){
+  const dot  = document.getElementById('driveDot');
+  const sub  = document.getElementById('lastSyncText');
+  dot.className = 'drive-dot ' + state;
+  sub.textContent = text;
+}
+function updateLastSync(){
+  const now = new Date();
+  document.getElementById('lastSyncText').textContent =
+    'آخر حفظ: ' + now.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+const svcLabel = { khitan:'✂️ ختان', hijama:'🩸 حجامة', nursing:'💉 خدمات تمريضية', other:'🩺 أخرى' };
+const AC = ['#2563eb','#dc2626','#16a34a','#7c3aed','#ea580c','#0891b2','#be185d','#0a7259'];
+function getColor(n){ let h=0; for(let c of(n||'')) h=(h*31+c.charCodeAt(0))&0xffff; return AC[h%AC.length]; }
+function getLetter(n){ return (n||'?').trim()[0]; }
+function fmtDate(d){ if(!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('ar-IQ',{year:'numeric',month:'long',day:'numeric'}); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// clock
+function tick(){
+  const n=new Date();
+  document.getElementById('clockDisplay').textContent = n.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('dateDisplay').textContent  = n.toLocaleDateString('ar-IQ',{weekday:'long',month:'long',day:'numeric'});
+}
+setInterval(tick,1000); tick();
+
+// ══════════════════════════════════════════════
+//  PAGES
+// ══════════════════════════════════════════════
+const pageLabels = { dash:'لوحة التحكم', patients:'المرضى', today:'زيارات اليوم', profile:'ملف المريض' };
+function showPage(p){
+  ['dash','patients','profile','today'].forEach(id=>{
+    document.getElementById('page'+id[0].toUpperCase()+id.slice(1)).classList.remove('active');
+    const n=document.getElementById('nav-'+id); if(n) n.classList.remove('active');
+  });
+  document.getElementById('page'+p[0].toUpperCase()+p.slice(1)).classList.add('active');
+  const n=document.getElementById('nav-'+p); if(n) n.classList.add('active');
+  document.getElementById('topbarTitle').textContent = pageLabels[p]||'';
+  document.getElementById('btnAddPatient').style.display = p==='patients'?'flex':'none';
+  document.getElementById('btnAddVisit').style.display   = p==='profile'?'flex':'none';
+  if(p==='dash')     renderDash();
+  if(p==='patients') renderPatients();
+  if(p==='today')    renderToday();
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+
+// ══════════════════════════════════════════════
+//  GENDER / CHECKBOXES
+// ══════════════════════════════════════════════
+function setGender(g){
+  currentGender=g;
+  document.getElementById('gm').classList.toggle('sel',g==='male');
+  document.getElementById('gf').classList.toggle('sel',g==='female');
+  document.getElementById('err_gender').classList.remove('show');
+}
+function toggleCb(el){
+  el.classList.toggle('sel');
+  el.querySelector('.cb-box').textContent = el.classList.contains('sel')?'✓':'';
+}
+function getChecked(container){
+  return [...container.querySelectorAll('.cb-item.sel')].map(el=>el.textContent.trim().replace('✓','').trim());
+}
+function resetCbs(container){
+  container.querySelectorAll('.cb-item').forEach(el=>{ el.classList.remove('sel'); el.querySelector('.cb-box').textContent=''; });
+}
+function toggleNursingSub(){
+  document.getElementById('nursingSub2').style.display =
+    document.getElementById('inp_visitService').value==='nursing' ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════════
+//  PATIENT CRUD
+// ══════════════════════════════════════════════
+function openNewPatientModal(){
+  editPatientId=null; currentGender='';
+  document.getElementById('patientModalTitle').textContent='➕ مريض جديد';
+  ['name','age','phone','address','meds','allergy','notes'].forEach(f=>{ document.getElementById('inp_'+f).value=''; });
+  document.getElementById('gm').classList.remove('sel');
+  document.getElementById('gf').classList.remove('sel');
+  resetCbs(document.getElementById('chronicCbs'));
+  ['name','age','gender'].forEach(f=>document.getElementById('err_'+f).classList.remove('show'));
+  openModal('modalAddPatient');
+}
+
+function editPatient(id){
+  const p=db.patients.find(x=>x.id===id); if(!p) return;
+  editPatientId=id; currentGender=p.gender||'';
+  document.getElementById('patientModalTitle').textContent='✏️ تعديل بيانات المريض';
+  document.getElementById('inp_name').value    = p.name||'';
+  document.getElementById('inp_age').value     = p.age||'';
+  document.getElementById('inp_phone').value   = p.phone||'';
+  document.getElementById('inp_address').value = p.address||'';
+  document.getElementById('inp_meds').value    = p.meds||'';
+  document.getElementById('inp_allergy').value = p.allergy||'';
+  document.getElementById('inp_notes').value   = p.notes||'';
+  document.getElementById('gm').classList.toggle('sel',p.gender==='male');
+  document.getElementById('gf').classList.toggle('sel',p.gender==='female');
+  const cbs=document.getElementById('chronicCbs');
+  resetCbs(cbs);
+  cbs.querySelectorAll('.cb-item').forEach(el=>{
+    const txt=el.textContent.trim().replace('✓','').trim().slice(1).trim();
+    if((p.diseases||[]).some(d=>d.slice(2).trim()===txt||d.includes(txt))){
+      el.classList.add('sel'); el.querySelector('.cb-box').textContent='✓';
+    }
+  });
+  openModal('modalAddPatient');
+}
+
+function savePatient(){
+  const name=document.getElementById('inp_name').value.trim();
+  const age=parseInt(document.getElementById('inp_age').value);
+  let ok=true;
+  if(!name){   document.getElementById('err_name').classList.add('show'); ok=false; }   else document.getElementById('err_name').classList.remove('show');
+  if(!age||age<18){ document.getElementById('err_age').classList.add('show'); ok=false; } else document.getElementById('err_age').classList.remove('show');
+  if(!currentGender){ document.getElementById('err_gender').classList.add('show'); ok=false; } else document.getElementById('err_gender').classList.remove('show');
+  if(!ok) return;
+  const p={
+    id: editPatientId||uid(), name, age, gender:currentGender,
+    phone:    document.getElementById('inp_phone').value.trim(),
+    address:  document.getElementById('inp_address').value.trim(),
+    diseases: getChecked(document.getElementById('chronicCbs')),
+    meds:     document.getElementById('inp_meds').value.trim(),
+    allergy:  document.getElementById('inp_allergy').value.trim(),
+    notes:    document.getElementById('inp_notes').value.trim(),
+    createdAt: editPatientId ? (db.patients.find(x=>x.id===editPatientId)?.createdAt||today()) : today(),
+  };
+  if(editPatientId){ const i=db.patients.findIndex(x=>x.id===editPatientId); if(i>=0) db.patients[i]=p; showToast('✅ تم تعديل بيانات المريض'); }
+  else { db.patients.unshift(p); showToast('✅ تم إضافة المريض'); }
+  queueSync(); updateBadge();
+  closeModal('modalAddPatient');
+  if(document.getElementById('pagePatients').classList.contains('active')) renderPatients();
+  if(document.getElementById('pageDash').classList.contains('active'))    renderDash();
+  if(currentProfileId===p.id) openProfile(p.id);
+}
+
+function deletePatient(id){
+  const p=db.patients.find(x=>x.id===id); if(!p) return;
+  document.getElementById('confirmMsg').textContent=`حذف "${p.name}" وجميع زياراته؟`;
+  document.getElementById('confirmBtn').onclick=()=>{
+    db.patients=db.patients.filter(x=>x.id!==id);
+    db.visits=db.visits.filter(x=>x.patientId!==id);
+    queueSync(); updateBadge(); closeModal('modalConfirm'); showToast('🗑️ تم الحذف'); showPage('patients');
+  };
+  openModal('modalConfirm');
+}
+
+// ══════════════════════════════════════════════
+//  VISIT CRUD
+// ══════════════════════════════════════════════
+function openAddVisitForPatient(patientId){
+  visitPatientLock=patientId;
+  const sel=document.getElementById('inp_visitPatient');
+  sel.innerHTML='<option value="">— اختر المريض —</option>';
+  db.patients.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; if(p.id===patientId) o.selected=true; sel.appendChild(o); });
+  document.getElementById('visitPatientSelectWrap').style.display = patientId?'none':'block';
+  document.getElementById('inp_visitService').value='';
+  document.getElementById('inp_visitDate').value=today();
+  document.getElementById('inp_visitDetails').value='';
+  document.getElementById('inp_visitNotes').value='';
+  document.getElementById('nursingSub2').style.display='none';
+  resetCbs(document.getElementById('nursingSub2'));
+  ['visitPatient','visitService','visitDate','visitDetails'].forEach(f=>document.getElementById('err_'+f).classList.remove('show'));
+  openModal('modalAddVisit');
+}
+
+function saveVisit(){
+  const patientId=visitPatientLock||document.getElementById('inp_visitPatient').value;
+  const service=document.getElementById('inp_visitService').value;
+  const date=document.getElementById('inp_visitDate').value;
+  const details=document.getElementById('inp_visitDetails').value.trim();
+  let ok=true;
+  if(!patientId){ document.getElementById('err_visitPatient').classList.add('show'); ok=false; } else document.getElementById('err_visitPatient').classList.remove('show');
+  if(!service){   document.getElementById('err_visitService').classList.add('show'); ok=false; } else document.getElementById('err_visitService').classList.remove('show');
+  if(!date){      document.getElementById('err_visitDate').classList.add('show');    ok=false; } else document.getElementById('err_visitDate').classList.remove('show');
+  if(!details){   document.getElementById('err_visitDetails').classList.add('show'); ok=false; } else document.getElementById('err_visitDetails').classList.remove('show');
+  if(!ok) return;
+  const v={ id:uid(), patientId, service, date, details,
+    notes: document.getElementById('inp_visitNotes').value.trim(),
+    nursingSubs: service==='nursing' ? getChecked(document.getElementById('nursingSub2')) : [],
+  };
+  db.visits.unshift(v); queueSync();
+  closeModal('modalAddVisit'); showToast('✅ تم حفظ الزيارة'); visitPatientLock=null;
+  if(currentProfileId===patientId) openProfile(patientId);
+  if(document.getElementById('pageDash').classList.contains('active'))  renderDash();
+  if(document.getElementById('pageToday').classList.contains('active')) renderToday();
+}
+
+function deleteVisit(id){
+  document.getElementById('confirmMsg').textContent='حذف هذه الزيارة؟';
+  document.getElementById('confirmBtn').onclick=()=>{
+    const v=db.visits.find(x=>x.id===id);
+    db.visits=db.visits.filter(x=>x.id!==id);
+    queueSync(); closeModal('modalConfirm'); showToast('🗑️ تم حذف الزيارة');
+    if(v&&currentProfileId===v.patientId) openProfile(v.patientId);
+    if(document.getElementById('pageDash').classList.contains('active')) renderDash();
+  };
+  openModal('modalConfirm');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════
+function renderAll(){ renderDash(); updateBadge(); }
+
+function renderDash(){
+  const t=today();
+  document.getElementById('statTotal').textContent  = db.patients.length;
+  document.getElementById('statToday').textContent  = db.visits.filter(v=>v.date===t).length;
+  document.getElementById('statHijama').textContent = db.visits.filter(v=>v.service==='hijama').length;
+  document.getElementById('statKhitan').textContent = db.visits.filter(v=>v.service==='khitan').length;
+  const recent=db.visits.slice(0,10);
+  const div=document.getElementById('recentVisitsList');
+  if(!recent.length){ div.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>لا توجد زيارات بعد</p></div>'; return; }
+  let html='<table class="patients-table"><thead><tr><th>المريض</th><th>الخدمة</th><th>التاريخ</th><th>التفاصيل</th></tr></thead><tbody>';
+  recent.forEach(v=>{
+    const p=db.patients.find(x=>x.id===v.patientId);
+    const color=getColor(p?.name||'');
+    html+=`<tr onclick="openProfile('${v.patientId}')" style="cursor:pointer;">
+      <td><div class="patient-name-cell"><div class="avatar" style="background:${color};width:28px;height:28px;font-size:12px;">${getLetter(p?.name||'?')}</div><div class="p-name">${p?.name||'—'}</div></div></td>
+      <td><span class="svc-badge svc-${v.service}">${svcLabel[v.service]||v.service}</span></td>
+      <td><span class="last-visit">${fmtDate(v.date)}</span></td>
+      <td style="font-size:12px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.details}</td></tr>`;
+  });
+  html+='</tbody></table>'; div.innerHTML=html;
+}
+
+function renderPatients(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const list=db.patients.filter(p=>p.name.toLowerCase().includes(q)||(p.phone||'').includes(q));
+  const tbody=document.getElementById('patientsTableBody');
+  tbody.innerHTML='';
+  document.getElementById('patientsEmpty').style.display=list.length?'none':'block';
+  document.getElementById('patientCount').textContent=list.length+' مريض';
+  list.forEach(p=>{
+    const visits=db.visits.filter(v=>v.patientId===p.id);
+    const last=visits[0]; const color=getColor(p.name);
+    const tr=document.createElement('tr');
+    tr.onclick=()=>openProfile(p.id);
+    tr.innerHTML=`<td><div class="patient-name-cell"><div class="avatar" style="background:${color}">${getLetter(p.name)}</div><div><div class="p-name">${p.name}</div><div class="p-id">${p.gender==='male'?'👨':'👩'} ${p.age} سنة</div></div></div></td>
+      <td>${p.age} / ${p.gender==='male'?'ذكر':'أنثى'}</td>
+      <td>${p.phone||'—'}</td>
+      <td><span class="visit-count">${visits.length}</span></td>
+      <td><span class="last-visit">${last?fmtDate(last.date):'—'}</span></td>
+      <td onclick="event.stopPropagation()"><div class="btn-row-actions">
+        <button class="btn-sm primary" onclick="openProfile('${p.id}')">📂 الملف</button>
+        <button class="btn-sm" onclick="editPatient('${p.id}')">✏️</button>
+        <button class="btn-sm danger" onclick="deletePatient('${p.id}')">🗑️</button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openProfile(id){
+  const p=db.patients.find(x=>x.id===id); if(!p) return;
+  currentProfileId=id;
+  const visits=db.visits.filter(v=>v.patientId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  const color=getColor(p.name);
+  let tags=''; (p.diseases||[]).forEach(d=>tags+=`<span class="ptag">${d}</span>`);
+  if(p.allergy) tags+=`<span class="ptag">⚠️ ${p.allergy}</span>`;
+  let visitsHtml='';
+  if(!visits.length){ visitsHtml='<div class="no-visits" style="text-align:center;padding:28px;color:var(--muted);"><div style="font-size:34px;opacity:.3;">📋</div><p style="margin-top:7px;font-weight:600;">لا توجد زيارات</p></div>'; }
+  else visits.forEach(v=>{
+    const subs=v.nursingSubs?.length?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;">${v.nursingSubs.map(s=>`<span style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:50px;padding:2px 8px;font-size:11px;color:#15803d;">${s}</span>`).join('')}</div>`:'';
+    visitsHtml+=`<div class="visit-card ${v.service}">
+      <div class="visit-head"><span class="visit-service ${v.service}">${svcLabel[v.service]||v.service}</span><span class="visit-date">📅 ${fmtDate(v.date)}</span></div>
+      <div class="visit-details">${v.details}</div>${subs}
+      ${v.notes?`<div class="visit-notes">💬 ${v.notes}</div>`:''}
+      <div style="margin-top:7px;"><button class="btn-sm danger" onclick="deleteVisit('${v.id}')">🗑️ حذف</button></div>
+    </div>`;
+  });
+  document.getElementById('profileContent').innerHTML=`
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:${color}">${getLetter(p.name)}</div>
+      <div class="profile-info">
+        <h2>${p.name}</h2>
+        <p>${p.age} سنة · ${p.gender==='male'?'ذكر':'أنثى'}${p.phone?' · '+p.phone:''}</p>
+        ${tags?`<div class="profile-tags">${tags}</div>`:''}
+      </div>
+    </div>
+    <div class="profile-grid">
+      <div>
+        <div class="info-card">
+          <div class="info-card-title">📋 البيانات الطبية</div>
+          ${p.address?`<div class="info-row"><span class="ir-label">المحافظة</span><span class="ir-value">${p.address}</span></div>`:''}
+          ${(p.diseases||[]).length?`<div class="info-row"><span class="ir-label">أمراض مزمنة</span><span class="ir-value">${p.diseases.join('، ')}</span></div>`:''}
+          ${p.meds?`<div class="info-row"><span class="ir-label">الأدوية</span><span class="ir-value">${p.meds}</span></div>`:''}
+          ${p.allergy?`<div class="info-row"><span class="ir-label">حساسية</span><span class="ir-value" style="color:var(--red)">⚠️ ${p.allergy}</span></div>`:''}
+          ${p.notes?`<div class="info-row"><span class="ir-label">ملاحظات</span><span class="ir-value">${p.notes}</span></div>`:''}
+          <div class="info-row"><span class="ir-label">الزيارات</span><span class="ir-value">${visits.length} زيارة</span></div>
+        </div>
+        <div style="margin-top:9px;display:flex;flex-direction:column;gap:7px;">
+          <button class="btn-add" style="width:100%;justify-content:center;" onclick="openAddVisitForPatient('${p.id}')">➕ إضافة زيارة</button>
+          <button class="btn-sm" style="width:100%;padding:9px;" onclick="editPatient('${p.id}')">✏️ تعديل بيانات المريض</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:var(--navy);margin-bottom:11px;">📁 التاريخ الطبي <span style="font-size:12px;color:var(--muted);font-weight:600;">(${visits.length} زيارة)</span></div>
+        ${visitsHtml}
+      </div>
+    </div>`;
+  showPage('profile');
+}
+
+function renderToday(){
+  const t=today(), tvs=db.visits.filter(v=>v.date===t);
+  const grid=document.getElementById('todayGrid');
+  document.getElementById('todayEmpty').style.display=tvs.length?'none':'block';
+  grid.innerHTML='';
+  tvs.forEach(v=>{
+    const p=db.patients.find(x=>x.id===v.patientId);
+    const color=getColor(p?.name||'');
+    const div=document.createElement('div'); div.className='today-card';
+    div.innerHTML=`<div class="tc-avatar" style="background:${color}">${getLetter(p?.name||'?')}</div>
+      <div><div class="tc-name">${p?.name||'—'}</div>
+      <div style="font-size:12px;color:var(--muted);">${svcLabel[v.service]||v.service}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px;">${v.details.slice(0,60)}${v.details.length>60?'...':''}</div></div>`;
+    div.onclick=()=>openProfile(v.patientId);
+    grid.appendChild(div);
+  });
+}
+
+function updateBadge(){ document.getElementById('patientsBadge').textContent=db.patients.length; }
+</script>
+</body>
+</html>
